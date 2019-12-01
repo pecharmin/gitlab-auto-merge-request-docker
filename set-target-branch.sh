@@ -18,7 +18,7 @@ if [ -z "$TARGET_BRANCH" ]; then
   echo "Determining Default branch to open the Merge request"
   cat ${MERGE_MAP}
   echo "CI_COMMIT_REF_NAME: ${CI_COMMIT_REF_NAME}"
-  MERGE_TARGET=`jq --stream --raw-output ". | if .[0] == [\"$CI_COMMIT_REF_NAME\"] then .[1] else \"\" end" ${MERGE_MAP} | xargs`
+  MERGE_TARGET=`jq --raw-output ".[] | .\"${CI_COMMIT_REF_NAME}\" | select(.!=null)" ${MERGE_MAP}`
   echo "MERGE_TARGET: ${MERGE_TARGET}"
 fi
 
