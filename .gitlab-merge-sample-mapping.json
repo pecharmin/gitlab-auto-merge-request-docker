@@ -1,4 +1,4 @@
 {
-  "source-branch": "targe-branch",
+  "source-branch": "target-branch",
   "staging": "master"
 }
