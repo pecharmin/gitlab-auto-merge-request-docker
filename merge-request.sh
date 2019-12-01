@@ -53,6 +53,15 @@ do
 	  continue
 	fi
 
+        # Don't create a merge request if latest commit of source branch
+        # is already in target branch
+        LATEST_SOURCE_COMMIT=`curl --silent "${HOST}${CI_PROJECT_ID}/repository/commits?ref_name=${CI_COMMIT_REF_NAME}" --header "PRIVATE-TOKEN: ${GITLAB_PRIVATE_TOKEN}"`
+        if curl --silent "${HOST}${CI_PROJECT_ID}/repository/compare?from=${CI_COMMIT_REF_NAME}&to=${branch}" --header "PRIVATE-TOKEN: ${GITLAB_PRIVATE_TOKEN}" | grep -q "${LATEST_SOURCE_COMMIT}"
+        then
+          echo "Source branch is already merged into target branch."
+          continue
+        fi
+
         # Conditional commit prefix, etc: WIP
         if [ -z "${COMMIT_PREFIX}" ]; then
           COMMIT_TITLE="merge ${CI_COMMIT_REF_NAME} into ${branch}"
