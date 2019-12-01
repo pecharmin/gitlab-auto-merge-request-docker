@@ -50,6 +50,7 @@ fi
 
 for branch in $TARGET_BRANCH
 do
+	echo
 	echo "Source: ${CI_COMMIT_REF_NAME}"
 	echo "Target: ${branch}"
 
@@ -79,7 +80,6 @@ do
 	echo "No MR found, let's create a new one"
 	# No MR found, let's create a new one
 	if [ ${COUNTBRANCHES} -eq "0" ]; then
-	    echo 80
 	    echo ${BODY}
 
 	    response=`curl --silent -X POST "${HOST}${CI_PROJECT_ID}/merge_requests" \
