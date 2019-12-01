@@ -73,12 +73,11 @@ do
 
 	# Require a list of all the merge request and take a look if there is already
 	# one with the same source branch
-	LISTMR=`curl --silent "${HOST}${CI_PROJECT_ID}/merge_requests?state=opened" --header "PRIVATE-TOKEN:${GITLAB_PRIVATE_TOKEN}"`
-	COUNTBRANCHES=`echo ${LISTMR} | grep -o "\"source_branch\":\"${CI_COMMIT_REF_NAME}\"" | wc -l`
+	OPEN_MR=`curl --silent "${HOST}${CI_PROJECT_ID}/merge_requests?state=opened" --header "PRIVATE-TOKEN: ${GITLAB_PRIVATE_TOKEN}" | jq ".[] | select(.\"target_branch\"==\"${branch}\") | select(.\"source_branch\"==\"${CI_COMMIT_REF_NAME}\")"`
 
 	echo "No MR found, let's create a new one"
 	# No MR found, let's create a new one
-	if [ ${COUNTBRANCHES} -eq "0" ]; then
+	if [ -n "${OPEN_MR}" ]
 	    echo ${BODY}
 
 	    response=`curl --silent -X POST "${HOST}${CI_PROJECT_ID}/merge_requests" \
