@@ -87,6 +87,7 @@ do
 	echo "No MR found, let's create a new one"
 	# No MR found, let's create a new one
 	if [ -n "${OPEN_MR}" ]
+	then
 	    echo ${BODY}
 
 	    response=`curl --silent -X POST "${HOST}${CI_PROJECT_ID}/merge_requests" \
