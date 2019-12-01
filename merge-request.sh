@@ -9,13 +9,6 @@ fi
 
 source set-target-branch.sh
 
-# Conditional commit prefix, etc: WIP
-if [ -z "${COMMIT_PREFIX}" ]; then
-  COMMIT_TITLE="${CI_COMMIT_REF_NAME}"
-else
-  COMMIT_TITLE="${COMMIT_PREFIX}: ${CI_COMMIT_REF_NAME}"
-fi
-
 # Conditional remove branch after merge
 if [ -z "${REMOVE_BRANCH_AFTER_MERGE}" ]; then
   REMOVE_BRANCH_AFTER_MERGE=false
@@ -59,6 +52,13 @@ do
 	  echo "Source and Target branch is must be different! Exiting!"
 	  continue
 	fi
+
+        # Conditional commit prefix, etc: WIP
+        if [ -z "${COMMIT_PREFIX}" ]; then
+          COMMIT_TITLE="merge ${CI_COMMIT_REF_NAME} into ${branch}"
+        else
+          COMMIT_TITLE="${COMMIT_PREFIX}: merge ${CI_COMMIT_REF_NAME} into ${branch}"
+        fi
 
 	# The description of our new MR, we want to remove the branch after the MR has
 	# been closed
