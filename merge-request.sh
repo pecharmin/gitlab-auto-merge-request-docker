@@ -55,7 +55,8 @@ do
 
         # Don't create a merge request if latest commit of source branch
         # is already in target branch
-        LATEST_SOURCE_COMMIT=`curl --silent "${HOST}${CI_PROJECT_ID}/repository/commits?ref_name=${CI_COMMIT_REF_NAME}" --header "PRIVATE-TOKEN: ${GITLAB_PRIVATE_TOKEN}"`
+        LATEST_SOURCE_COMMIT=`curl --silent "${HOST}${CI_PROJECT_ID}/repository/commits?ref_name=${CI_COMMIT_REF_NAME}" --header "PRIVATE-TOKEN: ${GITLAB_PRIVATE_TOKEN}" | jq '.[0].id'`
+        echo "Latest commit in source branch ${CI_COMMIT_REF_NAME}: '$LATEST_SOURCE_COMMIT'"
         if curl --silent "${HOST}${CI_PROJECT_ID}/repository/compare?from=${CI_COMMIT_REF_NAME}&to=${branch}" --header "PRIVATE-TOKEN: ${GITLAB_PRIVATE_TOKEN}" | grep -q "${LATEST_SOURCE_COMMIT}"
         then
           echo "Source branch is already merged into target branch."
