@@ -34,7 +34,7 @@ if [ -z "$TARGET_BRANCH" ]; then
     # Look which is the default branch
     echo "HOST: ${HOST}"
     echo "Project ID: ${CI_PROJECT_ID}"
-    TARGET_BRANCH=`curl --silent "${HOST}${CI_PROJECT_ID}" --header "PRIVATE-TOKEN:${GITLAB_PRIVATE_TOKEN}" | jq --raw-output '.default_branch'`;
+    TARGET_BRANCH=`curl --silent "${HOST}${CI_PROJECT_ID}" --header "PRIVATE-TOKEN:${GITLAB_PRIVATE_TOKEN}" | jq --raw-output '.default_branch'`
   else
     echo "Using FALLBACK_TARGET_BRANCH branch to open the Merge request"
     TARGET_BRANCH="${FALLBACK_TARGET_BRANCH}"
@@ -69,13 +69,12 @@ do
 	    \"squash\": \"${SQUASH}\",
 	    \"title\": \"${COMMIT_TITLE}\",
 	    \"assignee_id\":\"${GITLAB_USER_ID}\"
-	}";
-	#
+	}"
 
 	# Require a list of all the merge request and take a look if there is already
 	# one with the same source branch
-	LISTMR=`curl --silent "${HOST}${CI_PROJECT_ID}/merge_requests?state=opened" --header "PRIVATE-TOKEN:${GITLAB_PRIVATE_TOKEN}"`;
-	COUNTBRANCHES=`echo ${LISTMR} | grep -o "\"source_branch\":\"${CI_COMMIT_REF_NAME}\"" | wc -l`;
+	LISTMR=`curl --silent "${HOST}${CI_PROJECT_ID}/merge_requests?state=opened" --header "PRIVATE-TOKEN:${GITLAB_PRIVATE_TOKEN}"`
+	COUNTBRANCHES=`echo ${LISTMR} | grep -o "\"source_branch\":\"${CI_COMMIT_REF_NAME}\"" | wc -l`
 
 	echo "No MR found, let's create a new one"
 	# No MR found, let's create a new one
@@ -85,30 +84,30 @@ do
 	    response=`curl --silent -X POST "${HOST}${CI_PROJECT_ID}/merge_requests" \
 	            --header "PRIVATE-TOKEN:${GITLAB_PRIVATE_TOKEN}" \
 	            --header "Content-Type: application/json" \
-	            --data "${BODY}"`;
+	            --data "${BODY}"`
 
 	    echo $response
 	    IID=`echo $response | jq .\"iid\"`
 	    echo $IID
-	    echo "Opened a new merge request: ${COMMIT_TITLE} and assigned with id ${IID}";
+	    echo "Opened a new merge request: ${COMMIT_TITLE} and assigned with id ${IID}"
 
 	    if $AUTO_MERGE; then
 	      BODY="{
 	          \"merge_when_pipeline_succeeds\": \"true\",
 	          \"squash\": \"${SQUASH}\"
-	      }";
+	      }"
 	      #\"should_remove_source_branch\": \"${REMOVE_BRANCH_AFTER_MERGE}\",
 
 	      curl --silent -X PUT "${HOST}${CI_PROJECT_ID}/merge_requests/${IID}/merge" \
 	            --header "PRIVATE-TOKEN:${GITLAB_PRIVATE_TOKEN}" \
 	            --header "Content-Type: application/json" \
-	            --data "${BODY}";
+	            --data "${BODY}"
 
 	      printf "\n"
-	      echo "Auto merging requested for ${COMMIT_TITLE} with id ${IID}";
+	      echo "Auto merging requested for ${COMMIT_TITLE} with id ${IID}"
 	    fi
 	    continue
 	fi
 
-	echo "No new merge request opened";
+	echo "No new merge request opened"
 done
